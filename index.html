@@ -38,7 +38,7 @@
       opacity: 0.9;
     }
 
-    /* Jubin Terbuka: Lutsinar penuh mendedahkan gambar.png di belakang */
+    /* Jubin Terbuka: Lutsinar mendedahkan gambar.png di belakang */
     .tile.unlocked {
       background: transparent !important;
       border-color: rgba(255, 255, 255, 0.2) !important;
@@ -48,7 +48,7 @@
       transform: scale(0.96);
     }
 
-    /* Jubin Lutsinar Panel Admin */
+    /* Kotak Jubin Lutsinar Panel Admin */
     .admin-tile-overlay {
       display: flex;
       flex-direction: column;
@@ -97,7 +97,7 @@
   <!-- Kandungan Utama -->
   <main class="max-w-6xl mx-auto px-4 py-6 w-full flex-grow space-y-6">
     
-    <!-- 1. PUZZLE MOSAIC 4x3 -->
+    <!-- 1. PUZZLE MOSAIC 4x3 (TATAPAN SEMUA MURID) -->
     <section id="puzzleSection" class="bg-white rounded-2xl shadow-sm p-5 md:p-6 border border-slate-200 ease-fluid">
       <div class="text-center mb-5">
         <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-800 text-xs font-bold rounded-full mb-2">
@@ -111,7 +111,7 @@
         </p>
       </div>
 
-      <!-- Kotak Grid Puzzle: Gambar gambar.png di Belakang -->
+      <!-- Kotak Grid Puzzle: Gambar Sebenar di Belakang -->
       <div class="max-w-2xl mx-auto mb-5">
         <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border-4 border-slate-900 shadow-xl bg-slate-900 flex items-center justify-center">
           <img id="mainPuzzleImage" src="gambar.png" alt="Gambar Rahsia Keseluruhan" class="absolute inset-0 w-full h-full object-cover select-none z-10" />
@@ -272,7 +272,7 @@
         </button>
       </div>
 
-      <!-- Log Masuk Admin (Tanpa sebarang placeholder contoh) -->
+      <!-- Log Masuk Admin (Tanpa placeholder contoh) -->
       <div id="adminLoginSection" class="my-auto py-8 max-w-sm mx-auto text-center w-full">
         <div class="w-12 h-12 bg-indigo-50 text-indigo-700 rounded-full flex items-center justify-center mx-auto mb-2.5 text-xl">
           <i class="fa-solid fa-lock"></i>
@@ -291,7 +291,7 @@
       <!-- Papan Pemuka Admin -->
       <div id="adminDashboard" class="hidden flex-1 overflow-y-auto space-y-5 pr-1">
         
-        <!-- Peta Jubin Lutsinar dengan gambar.png -->
+        <!-- Peta Jubin Lutsinar dengan Gambar Semasa -->
         <div class="bg-slate-900 text-white p-3.5 md:p-4 rounded-xl shadow-lg border border-slate-800">
           <div class="flex flex-wrap justify-between items-center mb-2.5 gap-2">
             <div>
@@ -299,7 +299,7 @@
                 <i class="fa-solid fa-eye"></i> PETA KEDUDUKAN GAMBAR VS 12 JUBIN (LUTSINAR)
               </h4>
               <p class="text-[11px] text-slate-300">
-                Gambar gambar.png kelihatan di sebalik setiap jubin bergaris putus-putus kuning.
+                Gambar sebenar kelihatan di sebalik setiap jubin bergaris putus-putus kuning.
               </p>
             </div>
             
@@ -322,7 +322,35 @@
           </div>
         </div>
 
-        <!-- Kawalan Guru -->
+        <!-- CIRI BAHARU: PENGURUSAN & MUAT NAIK GAMBAR PUZZLE -->
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 space-y-3">
+          <div class="flex items-center justify-between">
+            <h5 class="text-xs font-black text-amber-950 uppercase tracking-wide flex items-center gap-1.5">
+              <i class="fa-solid fa-cloud-arrow-up text-amber-600"></i> Muat Naik &amp; Tukar Gambar Baharu
+            </h5>
+            <span class="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded font-bold">Auto-Sync Semua Murid</span>
+          </div>
+          <p class="text-[11px] text-amber-800 leading-relaxed">
+            Muat naik sebarang fail gambar (JPG/PNG) dari komputer atau telefon anda. Gambar akan dikemas kini secara langsung di skrin semua murid serta-merta tanpa isu <em>cache</em>.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Butang Muat Naik Fail Terus -->
+            <label class="bg-amber-500 hover:bg-amber-600 active:scale-95 text-indigo-950 font-black text-xs px-3.5 py-2 rounded-lg cursor-pointer transition ease-fluid shadow flex items-center gap-1.5">
+              <i class="fa-solid fa-image"></i> Pilih &amp; Muat Naik Gambar Baharu
+              <input type="file" id="adminImgUploader" accept="image/*" class="hidden" onchange="handleAdminFileSelected(event)">
+            </label>
+
+            <!-- Butang Tetap Semula ke gambar.png di GitHub -->
+            <button onclick="handleResetToGithubImg()" class="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 font-bold text-xs px-3 py-2 rounded-lg transition ease-fluid flex items-center gap-1.5 shadow-sm">
+              <i class="fa-brands fa-github"></i> Guna gambar.png di GitHub
+            </button>
+          </div>
+
+          <div id="uploadStatusText" class="text-xs min-h-[1.25rem]"></div>
+        </div>
+
+        <!-- Kawalan Guru: Segerak & Reset -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
           <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-3 flex flex-col justify-between">
             <div>
@@ -447,13 +475,14 @@
     let currentStudent = null;
     let current15Questions = [];
     let currentOverlayAlpha = 0.50;
+    let lastLoadedImageUrl = "";
 
     document.addEventListener("DOMContentLoaded", () => {
       buildPuzzleGrid();
       populateDropdowns();
       refreshDataFromServer();
 
-      // Semakan langsung setiap 6 saat tanpa sebarang simpanan setempat
+      // Semak kemas kini langsung setiap 6 saat tanpa sebarang simpanan memori
       setInterval(() => {
         refreshDataFromServer(false);
       }, 6000);
@@ -504,10 +533,27 @@
         const data = await res.json();
         
         if (data.success) {
+          // 1. Kemas kini gambar semasa jika berbeza
+          if (data.imageUrl) {
+            let activeUrl = data.imageUrl;
+            // Jika ia fail setempat di GitHub, tambah pemutus cache
+            if (activeUrl === "gambar.png" || activeUrl.startsWith("gambar.")) {
+              activeUrl = activeUrl + "?v=" + (data.imageVersion || Date.now());
+            }
+
+            if (lastLoadedImageUrl !== activeUrl) {
+              lastLoadedImageUrl = activeUrl;
+              document.getElementById("mainPuzzleImage").src = activeUrl;
+              document.getElementById("adminPreviewImg").src = activeUrl;
+            }
+          }
+
+          // 2. Kemas kini senarai murid
           if (data.students && data.students.length === 12) {
             STUDENTS_DATA = data.students;
           }
 
+          // 3. Kemas kini jubin dibuka
           if (data.openedTiles && Array.isArray(data.openedTiles)) {
             openedTilesSet.clear();
             for (let i = 1; i <= 12; i++) {
@@ -551,7 +597,99 @@
       document.getElementById("puzzleSection").scrollIntoView({ behavior: "smooth" });
     }
 
-    // Log Masuk Murid
+    // ========================================================
+    // CIRI MUAT NAIK GAMBAR BAHARU TERUS DARI PERANTI GURU
+    // ========================================================
+    function handleAdminFileSelected(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const statusEl = document.getElementById("uploadStatusText");
+      statusEl.innerHTML = `<span class="text-amber-800 font-bold"><i class="fa-solid fa-spinner fa-spin"></i> Memampatkan &amp; memuat naik gambar...</span>`;
+
+      // Mampatkan imej ke saiz optimum sebelum dihantar (maksimum 900px)
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement("canvas");
+          const MAX_SIZE = 900;
+          let w = img.width;
+          let h = img.height;
+
+          if (w > h) {
+            if (w > MAX_SIZE) {
+              h *= MAX_SIZE / w;
+              w = MAX_SIZE;
+            }
+          } else {
+            if (h > MAX_SIZE) {
+              w *= MAX_SIZE / h;
+              h = MAX_SIZE;
+            }
+          }
+
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, w, h);
+
+          // Tukar kepada format JPEG mampat (~120KB)
+          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.82);
+          sendCompressedImageToServer(compressedDataUrl);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function sendCompressedImageToServer(dataUri) {
+      const statusEl = document.getElementById("uploadStatusText");
+
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "uploadImage",
+            imageData: dataUri
+          })
+        });
+
+        const result = await res.json();
+        if (result.success) {
+          statusEl.innerHTML = `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-circle-check"></i> ${result.message}</span>`;
+          lastLoadedImageUrl = result.imageUrl;
+          document.getElementById("mainPuzzleImage").src = result.imageUrl;
+          document.getElementById("adminPreviewImg").src = result.imageUrl;
+          refreshDataFromServer(true);
+        } else {
+          statusEl.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> Gagal: ${result.message}</span>`;
+        }
+      } catch (err) {
+        statusEl.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> Ralat: ${err.message}</span>`;
+      }
+    }
+
+    async function handleResetToGithubImg() {
+      const statusEl = document.getElementById("uploadStatusText");
+      statusEl.innerHTML = `<span class="text-amber-800 font-bold"><i class="fa-solid fa-spinner fa-spin"></i> Menetapkan semula ke gambar.png di GitHub...</span>`;
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=setImageUrl&url=gambar.png&_t=${Date.now()}`);
+        const result = await res.json();
+        if (result.success) {
+          statusEl.innerHTML = `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-circle-check"></i> Gambar ditetapkan ke gambar.png di GitHub!</span>`;
+          await refreshDataFromServer(true);
+        }
+      } catch (err) {
+        statusEl.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> Ralat: ${err.message}</span>`;
+      }
+    }
+
+    // ========================================================
+    // LOG MASUK & SESI KUIZ (15/15)
+    // ========================================================
     function handleStudentLogin(e) {
       e.preventDefault();
       const nama = document.getElementById("studentSelect").value;
@@ -648,7 +786,7 @@
       if (score === 15) {
         icon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i>`;
         title.innerHTML = `<span class="text-emerald-600">SEMPURNA! 15 / 15 BETUL!</span>`;
-        desc.innerHTML = `Tahniah <strong>${currentStudent.nama}</strong>! Semua 15 soalan tepat. <strong>Jubin ${currentStudent.noJubin}</strong> anda kini telah <strong>DIBUKA SECARA KEKAL</strong> untuk tatapan SEMUA murid mendedahkan gambar.png!`;
+        desc.innerHTML = `Tahniah <strong>${currentStudent.nama}</strong>! Semua 15 soalan tepat. <strong>Jubin ${currentStudent.noJubin}</strong> anda kini telah <strong>DIBUKA SECARA KEKAL</strong> untuk tatapan SEMUA murid mendedahkan gambar misteri!`;
 
         unlockTileUI(currentStudent.noJubin);
         await sendUnlockTileToServer(currentStudent.nama, currentStudent.noJubin);
@@ -668,7 +806,9 @@
       }
     }
 
-    // Teka Gambar Keseluruhan
+    // ========================================================
+    // TEKA GAMBAR KESELURUHAN
+    // ========================================================
     function openGuessModal() {
       document.getElementById("guessModal").classList.remove("hidden");
       if (currentStudent) {
@@ -704,7 +844,9 @@
       closeGuessModal();
     }
 
-    // Panel Guru
+    // ========================================================
+    // PANEL GURU (ADMIN)
+    // ========================================================
     function openAdminModal() {
       document.getElementById("adminModal").classList.remove("hidden");
     }
@@ -800,10 +942,10 @@
             tbody.appendChild(tr);
           });
         } else {
-          tbody.innerHTML = `<tr><td colspan="3" class="p-3 text-center text-slate-400">Tiada rekod tekaan ditemui.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400">Tiada rekod tekaan ditemui.</td></tr>`;
         }
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="3" class="p-3 text-center text-rose-500">Gagal memuat turun: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500">Gagal memuat turun: ${err.message}</td></tr>`;
       }
     }
 
