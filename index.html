@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Misi Teka Gambar & Kuiz Perniagaan SPM</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    /* Puzzle 4 Horizontal x 3 Tingkat (12 Jubin) */
+    .puzzle-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      aspect-ratio: 4 / 3;
+      position: relative;
+      background-image: url('gambar.jpg');
+      background-size: cover;
+      background-position: center;
+      border: 4px solid #1e293b;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px -5px rgba(0, 0, 0, 0.35);
+    }
+
+    .tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: #ffffff;
+      font-size: 2.2rem;
+      font-weight: 800;
+      border: 1.5px solid #0f172a;
+      transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: default;
+      user-select: none;
+      position: relative;
+    }
+
+    .tile .tile-sub {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    /* Keadaan Jubin Terbuka */
+    .tile.unlocked {
+      background: transparent !important;
+      border-color: rgba(255, 255, 255, 0.25);
+      color: transparent !important;
+      pointer-events: none;
+      transform: scale(0.96);
+      opacity: 0;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.4s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="bg-indigo-900 text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-400 text-indigo-950 flex items-center justify-center font-black text-xl shadow">
+          <i class="fa-solid fa-briefcase"></i>
+        </div>
+        <div>
+          <h1 class="text-lg md:text-xl font-black tracking-wide leading-tight">
+            PERNIAGAAN TINGKATAN 4 & 5
+          </h1>
+          <p class="text-xs text-indigo-200">Misi Teka Gambar Misteri &bull; Kuiz Objektif SPM</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="refreshDataFromServer()" title="Kemaskini Status Jubin" class="px-3 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-xs font-semibold rounded-lg border border-indigo-600 transition flex items-center gap-1.5">
+          <i id="syncIcon" class="fa-solid fa-arrows-rotate"></i> Kemaskini
+        </button>
+        <button onclick="openAdminModal()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-indigo-950 text-xs font-bold rounded-lg transition flex items-center gap-1.5 shadow">
+          <i class="fa-solid fa-user-shield"></i> Panel Guru
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Kandungan Utama -->
+  <main class="max-w-6xl mx-auto px-4 py-6 w-full flex-grow space-y-8">
+    
+    <!-- 1. PUZZLE MOSAIC 4x3 -->
+    <section class="bg-white rounded-2xl shadow-lg p-5 md:p-6 border border-slate-200">
+      <div class="text-center mb-5">
+        <span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-xs font-bold rounded-full mb-1">
+          SUSUNAN 4 HORIZONTAL &times; 3 MENINGKAT (12 JUBIN)
+        </span>
+        <h2 class="text-xl md:text-2xl font-black text-slate-800">PUZZLE GAMBAR MISTERI</h2>
+        <p class="text-sm text-slate-600 max-w-xl mx-auto">
+          Setiap murid memegang 1 jubin khas. Selesaikan <strong>15/15 soalan betul</strong> untuk membuka jubin anda!
+        </p>
+      </div>
+
+      <!-- Container Grid Puzzle 4x3 -->
+      <div class="max-w-2xl mx-auto mb-6">
+        <div id="puzzleBoard" class="puzzle-grid">
+          <!-- 12 Jubin dijana oleh JS -->
+        </div>
+      </div>
+
+      <!-- Butang Meneka Gambar Tersembunyi -->
+      <div class="max-w-md mx-auto text-center">
+        <button onclick="openGuessModal()" class="w-full bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2 text-base tracking-wide">
+          <i class="fa-solid fa-lightbulb text-yellow-200 text-lg"></i> SAYA TAHU! TEKA GAMBAR INI
+        </button>
+        <p class="text-[11px] text-slate-500 mt-2">
+          <i class="fa-regular fa-clock"></i> Masa dan jawapan tekaan anda direkodkan terus ke Google Sheet guru.
+        </p>
+      </div>
+    </section>
+
+    <!-- 2. LOG MASUK MURID & SESI KUIZ -->
+    <section id="quizSection" class="bg-white rounded-2xl shadow-lg p-5 md:p-8 border border-slate-200">
+      
+      <!-- Borang Log Masuk Murid -->
+      <div id="loginCard" class="max-w-md mx-auto">
+        <div class="text-center mb-6">
+          <div class="w-16 h-16 bg-indigo-50 text-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl font-bold shadow-inner">
+            <i class="fa-solid fa-id-card"></i>
+          </div>
+          <h3 class="text-xl font-black text-slate-800">Log Masuk Murid</h3>
+          <p class="text-xs text-slate-500 mt-1">
+            Pilih nama anda dan masukkan Kata Laluan (Nombor Kad Pengenalan tanpa sengkang).
+          </p>
+        </div>
+
+        <form id="studentLoginForm" onsubmit="handleStudentLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nama Murid</label>
+            <select id="studentSelect" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-slate-50">
+              <option value="">-- Sila Pilih Nama Anda --</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kata Laluan (No. IC Tanpa Sempang)</label>
+            <input type="password" id="icInput" required placeholder="Contoh: 091130010503" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-slate-50" />
+          </div>
+
+          <button type="submit" class="w-full bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-3.5 rounded-xl transition text-sm shadow-md flex items-center justify-center gap-2">
+            <i class="fa-solid fa-play"></i> MULA KUIZ (15 SOALAN RAWAK)
+          </button>
+        </form>
+      </div>
+
+      <!-- Paparan Kuiz Aktif -->
+      <div id="quizContainer" class="hidden fade-in">
+        <div class="flex flex-wrap justify-between items-center border-b pb-4 mb-6 gap-2 bg-slate-50 p-4 rounded-xl">
+          <div>
+            <div class="text-xs text-slate-500 uppercase tracking-wider font-bold">Murid:</div>
+            <h3 class="text-lg font-black text-slate-800" id="currentStudentName">-</h3>
+            <span class="inline-block text-xs bg-indigo-700 text-white font-bold px-3 py-1 rounded-full mt-1" id="assignedTileBadge">
+              Jubin Anda: 1
+            </span>
+          </div>
+          <button onclick="logoutStudent()" class="text-xs bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 px-3 py-1.5 rounded-lg font-bold transition">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar / Tukar Murid
+          </button>
+        </div>
+
+        <div id="quizFormWrapper">
+          <div class="mb-4 text-xs bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-lg flex items-center gap-2">
+            <i class="fa-solid fa-circle-exclamation text-base"></i>
+            <span><strong>Syarat Wajib:</strong> Anda mesti betul 15/15 soalan untuk membuka jubin. Selagi belum terbuka, anda boleh mengulang seberapa banyak sesi baharu!</span>
+          </div>
+
+          <form id="activeQuizForm" onsubmit="submitQuizAnswers(event)" class="space-y-6">
+            <div id="questionsList" class="space-y-5">
+              <!-- 15 soalan rawak -->
+            </div>
+
+            <div class="pt-6 border-t flex justify-end">
+              <button type="submit" class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 px-10 rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2">
+                <i class="fa-solid fa-paper-plane"></i> HANTAR JAWAPAN & SEMAK
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Kad Keputusan Kuiz -->
+        <div id="quizResultModal" class="hidden text-center py-8 fade-in">
+          <div id="resultIcon" class="text-7xl mb-4"></div>
+          <h4 id="resultTitle" class="text-2xl md:text-3xl font-black mb-2"></h4>
+          <p id="resultDesc" class="text-slate-600 max-w-lg mx-auto mb-6 text-sm leading-relaxed"></p>
+          <div class="flex flex-wrap justify-center gap-3">
+            <button id="retryBtn" onclick="startNewSession()" class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-3 px-8 rounded-xl text-sm shadow transition flex items-center gap-2">
+              <i class="fa-solid fa-rotate-right"></i> Cuba Sesi Baharu (15 Soalan Lain)
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- MODAL TEKA GAMBAR RAHSIA -->
+  <div id="guessModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl fade-in">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-black text-lg text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-trophy text-amber-500"></i> Teka Gambar Rahsia
+        </h3>
+        <button onclick="closeGuessModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+        Tuliskan tekaan anda bagi gambar rahsia. Masa terpantas dan jawapan anda akan direkodkan terus kepada guru!
+      </p>
+      
+      <form onsubmit="handleSendGuess(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Pilih Nama Anda</label>
+          <select id="guessStudentSelect" required class="w-full border rounded-xl p-2.5 text-sm bg-slate-50">
+            <option value="">-- Pilih Nama Anda --</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Tekaan Anda (Perkataan Bebas)</label>
+          <input type="text" id="guessInput" placeholder="Cth: Monyet naik kuda pakai helmet" required class="w-full border rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none" />
+        </div>
+        <button type="submit" id="btnSubmitGuess" class="w-full bg-amber-500 hover:bg-amber-600 text-indigo-950 font-black py-3 rounded-xl text-sm shadow transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i> Hantar Tekaan Sekarang
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL PANEL GURU (ADMIN) -->
+  <div id="adminModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl max-h-[90vh] flex flex-col fade-in">
+      <div class="flex justify-between items-center mb-4 border-b pb-3">
+        <h3 class="font-black text-lg text-indigo-950 flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved text-amber-500"></i> Panel Kawalan Guru
+        </h3>
+        <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Bahagian Log Masuk Admin -->
+      <div id="adminLoginSection" class="my-auto py-6 max-w-sm mx-auto text-center w-full">
+        <div class="w-12 h-12 bg-indigo-50 text-indigo-700 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <p class="text-xs text-slate-600 mb-3 font-semibold">Masukkan kata laluan guru:</p>
+        <div class="flex gap-2">
+          <input type="password" id="adminPassInput" placeholder="Kata laluan" class="border rounded-xl p-2.5 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-slate-50" />
+          <button onclick="verifyAdmin()" class="bg-indigo-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow">
+            Masuk
+          </button>
+        </div>
+        <p id="adminError" class="text-rose-500 text-xs mt-2 hidden font-bold">Kata laluan salah!</p>
+      </div>
+
+      <!-- Papan Pemuka Admin -->
+      <div id="adminDashboard" class="hidden flex-1 overflow-y-auto space-y-6">
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <h4 class="text-xs font-black text-slate-700 uppercase tracking-wider">
+              Rekod Tekaan Gambar Murid (Terkini & Terpantas)
+            </h4>
+            <button onclick="fetchAdminGuesses()" class="text-xs text-indigo-600 hover:underline font-bold">
+              <i class="fa-solid fa-rotate"></i> Muat Semula
+            </button>
+          </div>
+          <div class="overflow-x-auto border rounded-xl max-h-56">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-100 border-b text-slate-700 font-bold sticky top-0">
+                <tr>
+                  <th class="p-2.5">Masa</th>
+                  <th class="p-2.5">Nama Murid</th>
+                  <th class="p-2.5">Teks Tekaan</th>
+                </tr>
+              </thead>
+              <tbody id="guessesTableBody">
+                <tr><td colspan="3" class="p-4 text-center text-slate-400">Memuatkan data tekaan...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2">
+            Status Pembukaan 12 Jubin (4 &times; 3)
+          </h4>
+          <div id="adminTilesList" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 text-xs">
+            <!-- Senarai Jubin -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-white border-t py-4 text-center text-xs text-slate-500">
+    Web App Pembelajaran Perniagaan Tingkatan 4 & 5 &bull; SPM EduTech
+  </footer>
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT APLIKASI WEB                                  -->
+  <!-- ======================================================== -->
+  <script>
+    // 1. URL Web App Google Apps Script
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJkcU5x_Kp7QsfezSb1bXtSl8ZXA1WywNDsXgKnWbNii7xWLlEe1k3VopMCAC0eJe7gw/exec";
+
+    // 2. Senarai Tepat 12 Murid (Jubin 1 hingga 12)
+    let STUDENTS_DATA = [
+      { nama: "ADAM RAYYAN BIN KHAIRUL ANUAR", ic: "091130010503", noJubin: 1, opened: false },
+      { nama: "AMMAR SHAKIR BIN MAZLAN", ic: "091118010893", noJubin: 2, opened: false },
+      { nama: "HARINI A/P VADIVELAN", ic: "090817011612", noJubin: 3, opened: false },
+      { nama: "MUHAMAD AFIQ BIN NORAZLI", ic: "090715011531", noJubin: 4, opened: false },
+      { nama: "MUHAMMAD AZIQ THAQIF BIN MOHD ISA", ic: "090716011533", noJubin: 5, opened: false },
+      { nama: "MUHAMMAD DANIAL ARASH BIN SARKAN", ic: "091203011751", noJubin: 6, opened: false },
+      { nama: "NUR FARAH ALYSAH BINTI ZULKEFPLAI", ic: "090514011076", noJubin: 7, opened: false },
+      { nama: "NURFAHANA BINTI MOHD YUSUF", ic: "090924010850", noJubin: 8, opened: false },
+      { nama: "PUTERI NATASYA ALYAA BINTI ZAIDI", ic: "090430011036", noJubin: 9, opened: false },
+      { nama: "PUTERI QALEESYA ARYANA BINTI BAHRIN", ic: "091019011786", noJubin: 10, opened: false },
+      { nama: "SURENTARN A/L K NARAYANAN", ic: "090618010991", noJubin: 11, opened: false },
+      { nama: "TAN TAI FENG", ic: "090609011693", noJubin: 12, opened: false }
+    ];
+
+    // 3. Bank Soalan Perniagaan Tingkatan 4 & 5 (SPM)
+    let QUESTION_BANK = [
+      { id: 1, q: "Apakah tujuan utama perniagaan berorientasikan keuntungan?", options: ["Memaksimumkan keuntungan dan menjamin kelangsungan perniagaan", "Menyediakan perkhidmatan percuma kepada orang ramai", "Mengutip cukai bagi pihak kerajaan", "Mengawal harga pasaran barangan keperluan"], answer: "A" },
+      { id: 2, q: "Antara pemilikan perniagaan berikut, yang manakah mempunyai liabiliti tidak terhad?", options: ["Syarikat Sendirian Berhad", "Milikan Tunggal", "Syarikat Awam Berhad", "Koperasi Berhad"], answer: "B" },
+      { id: 3, q: "Apakah kelebihan utama Syarikat Sendirian Berhad berbanding Perkongsian?", options: ["Liabiliti pemegang syer terhad kepada modal yang dilaburkan", "Tidak perlu mendaftar perniagaan dengan SSM", "Bebas menjual syer kepada orang awam di bursa saham", "Semua rakan kongsi menanggung kerugian tanpa had"], answer: "A" },
+      { id: 4, q: "Prinsip koperasi menekankan:", options: ["Kawalan demokratik oleh anggota (satu anggota satu undi)", "Keuntungan maksimum kepada pemegang syer terbesar", "Pembelian syer tanpa had oleh orang luar", "Aktiviti monopoli barangan pengguna"], answer: "A" },
+      { id: 5, q: "Sektor kedua dalam aktiviti perniagaan merangkumi aktiviti:", options: ["Pembuatan dan pembinaan", "Pertanian dan perikanan", "Perbankan dan insurans", "Pelancongan dan perhotelan"], answer: "A" },
+      { id: 6, q: "Apakah peranan utama agensi MATRADE kepada usahawan tempatan?", options: ["Mempromosikan dan memasarkan produk Malaysia ke peringkat antarabangsa", "Menyediakan dana pinjaman mikro tanpa faedah", "Menetapkan dasar gaji minimum pekerja", "Mendaftar cap dagangan perniagaan"], answer: "A" },
+      { id: 7, q: "Ciri penetapan objektif yang baik mengikut konsep SMART merangkumi:", options: ["Specific, Measurable, Attainable, Realistic, Time-bound", "Simple, Measurable, Action, Rapid, Tested", "Standard, Marketable, Accurate, Real, Targeted", "Systematic, Meaningful, Active, Resourceful, Time"], answer: "A" },
+      { id: 8, q: "Apakah peranan bahagian fungsian Pengurusan Sumber Manusia?", options: ["Merancang pengambilan, latihan dan menjaga kebajikan pekerja", "Menyediakan penyata aliran tunai tahunan", "Membeli bahan mentah daripada pembekal", "Menguruskan kempen pengiklanan di televisyen"], answer: "A" },
+      { id: 9, q: "Antara berikut, yang manakah merupakan sumber pembiayaan dalaman bagi sesebuah perniagaan?", options: ["Rizab dan untung tertahan", "Pinjaman overdraf bank", "Pajakan peralatan daripada syarikat kewangan", "Geran permulaan agensi kerajaan"], answer: "A" },
+      { id: 10, q: "Penyata aliran tunai disediakan untuk menunjukkan:", options: ["Kecairan tunai masuk dan tunai keluar bagi sesuatu tempoh", "Senarai pemiutang yang belum berbayar", "Nilai susut nilai aset bukan semasa", "Jumlah keuntungan kasar syarikat"], answer: "A" },
+      { id: 11, q: "Apakah kelebihan utama pemasaran digital menggunakan media sosial?", options: ["Liputan pasaran yang meluas dengan kos promosi yang lebih rendah", "Tidak memerlukan sebarang sambungan internet", "Mewajibkan pelanggan membayar secara tunai", "Menghapuskan persaingan dengan syarikat besar"], answer: "A" },
+      { id: 12, q: "Akta Hak Cipta 1987 bertujuan untuk melindungi:", options: ["Karya sastera, muzik, seni dan perisian komputer daripada diciplak", "Hak pekerja daripada ditamatkan perkhidmatan", "Pengguna daripada barangan tiruan yang berbahaya", "Peniaga daripada cukai berganda"], answer: "A" },
+      { id: 13, q: "Seorang usahawan yang berinovatif sentiasa:", options: ["Menjana idea baharu serta menambah baik produk sedia ada", "Mengelak daripada mengambil sebarang risiko", "Meniru bulat-bulat produk yang laris di pasaran", "Mengurangkan kualiti produk demi mengaut untung"], answer: "A" },
+      { id: 14, q: "Perniagaan francais membolehkan penerima francais (franchisee):", options: ["Menggunakan jenama dan sistem perniagaan yang telah terbukti berjaya", "Menukar logo dan nama sesuka hati", "Tidak perlu membayar royalti atau yuran francais", "Menjual sebarang produk lain tanpa kebenaran"], answer: "A" },
+      { id: 15, q: "Apakah fungsi utama Rancangan Perniagaan (RP)?", options: ["Sebagai garis panduan operasi dan alat meyakinkan pihak pembiaya", "Untuk mengelakkan bayaran cukai pendapatan syarikat", "Untuk menggantikan keperluan pendaftaran dengan SSM", "Sebagai bukti saman sekiranya berlaku pertikaian pekerja"], answer: "A" },
+      { id: 16, q: "Apakah kelebihan perniagaan bersaiz kecil berbanding perniagaan bersaiz besar?", options: ["Struktur pengurusan yang fleksibel dan kos overhed yang rendah", "Menikmati ekonomi bidangan secara maksimum", "Mempunyai cawangan di seluruh dunia", "Kemudahan mendapatkan pinjaman berjuta ringgit"], answer: "A" },
+      { id: 17, q: "Campuran pemasaran (4P) terdiri daripada:", options: ["Product, Price, Place, Promotion", "People, Process, Profit, Product", "Planning, Price, Partner, Position", "Purchase, Production, Price, Packaging"], answer: "A" },
+      { id: 18, q: "Mengapakah sesebuah perniagaan perlu mengekalkan tahap kecairan yang tinggi?", options: ["Untuk membayar obligasi hutang jangka pendek tepat pada masanya", "Untuk membolehkan syarikat membeli tanah secara tunai", "Supaya boleh memberi diskaun percuma kepada semua pelanggan", "Untuk mengelakkan pembayaran dividen kepada pemegang syer"], answer: "A" },
+      { id: 19, q: "Dalam analisis SWOT, aspek 'Kekuatan' dan 'Kelemahan' merujuk kepada:", options: ["Faktor persekitaran dalaman perniagaan", "Faktor persekitaran luaran pasaran", "Dasar ekonomi kerajaan global", "Keadaan inflasi dan deflasi semasa"], answer: "A" },
+      { id: 20, q: "Kesan inflasi yang berterusan terhadap pengguna ialah:", options: ["Kuasa beli pengguna merosot akibat kenaikan harga barang", "Pendapatan benar pengguna meningkat secara drastik", "Semua barangan import menjadi lebih murah", "Kadar pengangguran berkurang secara automatik"], answer: "A" },
+      { id: 21, q: "Apakah maksud sumber fizikal dalam sesebuah organisasi perniagaan?", options: ["Aset ketara seperti bangunan, mesin, kilang dan stok", "Kemahiran dan pengalaman pekerja", "Lesen perisian dan hak cipta terpelihara", "Modal tunai yang disimpan di dalam akaun bank"], answer: "A" },
+      { id: 22, q: "Antara berikut, yang manakah contoh sumber teknologi?", options: ["Harta intelek dan lesen perisian", "Kenderaan pengangkutan syarikat", "Bahan mentah di dalam gudang", "Bangunan pejabat urusan"], answer: "A" },
+      { id: 23, q: "Dokumen perniagaan yang dikeluarkan oleh pembekal untuk membetulkan kesilapan kurangan caj dalam invois ialah:", options: ["Nota Debit", "Nota Kredit", "Resit Rasmi", "Baucar Pembayaran"], answer: "A" },
+      { id: 24, q: "Apakah kelebihan pembiayaan melalui sewa beli?", options: ["Perniagaan dapat menggunakan aset modal sebelum membayarnya secara penuh", "Kadar faedah adalah percuma tanpa sebarang caj", "Hak milik aset berpindah kepada pembeli serta-merta pada hari pertama", "Tidak memerlukan sebarang bayaran ansuran bulanan"], answer: "A" },
+      { id: 25, q: "Agensi kerajaan manakah yang menyediakan latihan keusahawanan dan skim pembiayaan MARA?", options: ["Majlis Amanah Rakyat (MARA)", "Kementerian Luar Negeri", "Bank Negara Malaysia (BNM)", "Lembaga Hasil Dalam Negeri (LHDN)"], answer: "A" }
+    ];
+
+    let openedTilesSet = new Set();
+    let currentStudent = null;
+    let current15Questions = [];
+
+    // ========================================================
+    // MEMULAKAN SISTEM (INITIALIZATION)
+    // ========================================================
+    document.addEventListener("DOMContentLoaded", () => {
+      buildPuzzleGrid();
+      populateDropdowns();
+      refreshDataFromServer();
+    });
+
+    function buildPuzzleGrid() {
+      const board = document.getElementById("puzzleBoard");
+      board.innerHTML = "";
+      for (let i = 1; i <= 12; i++) {
+        const tile = document.createElement("div");
+        tile.className = "tile";
+        tile.id = `tile-${i}`;
+        tile.innerHTML = `
+          <span>${i}</span>
+          <span class="tile-sub">Jubin ${i}</span>
+        `;
+        board.appendChild(tile);
+      }
+    }
+
+    function populateDropdowns() {
+      const select = document.getElementById("studentSelect");
+      const guessSelect = document.getElementById("guessStudentSelect");
+      
+      select.innerHTML = '<option value="">-- Sila Pilih Nama Anda --</option>';
+      guessSelect.innerHTML = '<option value="">-- Pilih Nama Anda --</option>';
+
+      STUDENTS_DATA.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s.nama;
+        opt.textContent = `${s.nama} (Jubin ${s.noJubin})`;
+        select.appendChild(opt);
+
+        const opt2 = document.createElement("option");
+        opt2.value = s.nama;
+        opt2.textContent = s.nama;
+        guessSelect.appendChild(opt2);
+      });
+    }
+
+    async function refreshDataFromServer() {
+      const syncIcon = document.getElementById("syncIcon");
+      if (syncIcon) syncIcon.classList.add("fa-spin");
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getTiles`);
+        const data = await res.json();
+        
+        if (data.success) {
+          if (data.students && data.students.length > 0) {
+            STUDENTS_DATA = data.students;
+            populateDropdowns();
+          }
+
+          if (data.openedTiles && Array.isArray(data.openedTiles)) {
+            data.openedTiles.forEach(num => unlockTileUI(num));
+          }
+        }
+
+        const qRes = await fetch(`${SCRIPT_URL}?action=getQuestions`);
+        const qData = await qRes.json();
+        if (qData.success && qData.questions && qData.questions.length >= 15) {
+          QUESTION_BANK = qData.questions;
+        }
+      } catch (err) {
+        console.warn("Memuatkan senarai tempatan:", err);
+      } finally {
+        if (syncIcon) syncIcon.classList.remove("fa-spin");
+      }
+    }
+
+    function unlockTileUI(tileNum) {
+      openedTilesSet.add(tileNum);
+      const el = document.getElementById(`tile-${tileNum}`);
+      if (el) {
+        el.classList.add("unlocked");
+      }
+    }
+
+    // ========================================================
+    // LOG MASUK & SESI KUIZ (15/15)
+    // ========================================================
+    function handleStudentLogin(e) {
+      e.preventDefault();
+      const nama = document.getElementById("studentSelect").value;
+      const icEntered = document.getElementById("icInput").value.trim().replace(/-/g, "");
+
+      const found = STUDENTS_DATA.find(s => s.nama === nama);
+      if (!found) {
+        alert("Sila pilih nama murid.");
+        return;
+      }
+
+      const studentIC = String(found.noIc).trim().replace(/-/g, "");
+      if (studentIC !== icEntered && studentIC !== ("0" + icEntered) && ("0" + studentIC) !== icEntered) {
+        alert("Kata laluan (No. IC tanpa sempang) tidak sepadan! Sila masukkan nombor IC yang betul.");
+        return;
+      }
+
+      currentStudent = found;
+      document.getElementById("loginCard").classList.add("hidden");
+      document.getElementById("quizContainer").classList.remove("hidden");
+      document.getElementById("currentStudentName").textContent = currentStudent.nama;
+      document.getElementById("assignedTileBadge").textContent = `Jubin Ditugaskan: Jubin ${currentStudent.noJubin}`;
+
+      startNewSession();
+    }
+
+    function logoutStudent() {
+      currentStudent = null;
+      document.getElementById("loginCard").classList.remove("hidden");
+      document.getElementById("quizContainer").classList.add("hidden");
+      document.getElementById("icInput").value = "";
+    }
+
+    function startNewSession() {
+      document.getElementById("quizResultModal").classList.add("hidden");
+      document.getElementById("quizFormWrapper").classList.remove("hidden");
+
+      const shuffled = [...QUESTION_BANK].sort(() => 0.5 - Math.random());
+      current15Questions = shuffled.slice(0, 15);
+
+      const container = document.getElementById("questionsList");
+      container.innerHTML = "";
+
+      current15Questions.forEach((item, idx) => {
+        const qCard = document.createElement("div");
+        qCard.className = "p-4 md:p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3";
+
+        const qTitle = document.createElement("div");
+        qTitle.className = "font-bold text-slate-800 text-sm md:text-base leading-snug flex items-start gap-2";
+        qTitle.innerHTML = `<span class="bg-indigo-700 text-white text-xs px-2.5 py-1 rounded-md shrink-0">Soalan ${idx + 1}</span> <span>${item.q}</span>`;
+        qCard.appendChild(qTitle);
+
+        const optsGrid = document.createElement("div");
+        optsGrid.className = "grid grid-cols-1 md:grid-cols-2 gap-2 text-xs md:text-sm pt-2";
+
+        const letters = ["A", "B", "C", "D"];
+        item.options.forEach((optText, oIdx) => {
+          const letter = letters[oIdx];
+          const label = document.createElement("label");
+          label.className = "flex items-center gap-2.5 p-3 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-indigo-50 transition";
+          label.innerHTML = `
+            <input type="radio" name="q_${idx}" value="${letter}" required class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+            <span class="text-slate-700 font-medium"><strong>${letter}.</strong> ${optText}</span>
+          `;
+          optsGrid.appendChild(label);
+        });
+
+        qCard.appendChild(optsGrid);
+        container.appendChild(qCard);
+      });
+
+      document.getElementById("quizSection").scrollIntoView({ behavior: "smooth" });
+    }
+
+    async function submitQuizAnswers(e) {
+      e.preventDefault();
+      let score = 0;
+
+      current15Questions.forEach((item, idx) => {
+        const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+        if (selected && selected.value === item.answer) {
+          score++;
+        }
+      });
+
+      document.getElementById("quizFormWrapper").classList.add("hidden");
+      const modal = document.getElementById("quizResultModal");
+      modal.classList.remove("hidden");
+
+      const icon = document.getElementById("resultIcon");
+      const title = document.getElementById("resultTitle");
+      const desc = document.getElementById("resultDesc");
+
+      if (score === 15) {
+        playAudioSuccess();
+        icon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i>`;
+        title.innerHTML = `<span class="text-emerald-600">LUAR BIASA! 15 / 15 BETUL!</span>`;
+        desc.innerHTML = `Tahniah <strong>${currentStudent.nama}</strong>! Semua 15 soalan tepat. <strong>Jubin ${currentStudent.noJubin}</strong> anda kini telah dibuka secara rasmi!`;
+
+        unlockTileUI(currentStudent.noJubin);
+        sendUnlockTileToServer(currentStudent.nama, currentStudent.noJubin);
+      } else {
+        playAudioFail();
+        icon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
+        title.innerHTML = `<span class="text-rose-600">Skor Anda: ${score} / 15</span>`;
+        desc.innerHTML = `Untuk membuka Jubin ${currentStudent.noJubin}, anda perlu memperoleh markah penuh <strong>15/15</strong>. Sila cuba lagi sesi baharu sekarang!`;
+      }
+    }
+
+    function sendUnlockTileToServer(nama, noJubin) {
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "unlockTile", nama: nama, noJubin: noJubin })
+      }).catch(() => {
+        fetch(`${SCRIPT_URL}?action=unlockTile&nama=${encodeURIComponent(nama)}&noJubin=${noJubin}`);
+      });
+    }
+
+    // ========================================================
+    // TEKA GAMBAR RAHSIA
+    // ========================================================
+    function openGuessModal() {
+      document.getElementById("guessModal").classList.remove("hidden");
+      if (currentStudent) {
+        document.getElementById("guessStudentSelect").value = currentStudent.nama;
+      }
+    }
+
+    function closeGuessModal() {
+      document.getElementById("guessModal").classList.add("hidden");
+    }
+
+    async function handleSendGuess(e) {
+      e.preventDefault();
+      const nama = document.getElementById("guessStudentSelect").value;
+      const tekaan = document.getElementById("guessInput").value.trim();
+      const btn = document.getElementById("btnSubmitGuess");
+
+      if (!nama || !tekaan) return;
+
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menghantar...`;
+
+      try {
+        await fetch(`${SCRIPT_URL}?action=submitGuess&nama=${encodeURIComponent(nama)}&tekaan=${encodeURIComponent(tekaan)}`);
+      } catch (err) {
+        console.warn("Ralat hantar tekaan:", err);
+      }
+
+      alert(`Tahniah ${nama}! Tekaan anda: "${tekaan}" telah direkodkan bersama tanda masa.`);
+      btn.disabled = false;
+      btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Hantar Tekaan Sekarang`;
+      document.getElementById("guessInput").value = "";
+      closeGuessModal();
+    }
+
+    // ========================================================
+    // PANEL GURU (ADMIN) - KATA LALUAN: adminperniagaan
+    // ========================================================
+    function openAdminModal() {
+      document.getElementById("adminModal").classList.remove("hidden");
+    }
+
+    function closeAdminModal() {
+      document.getElementById("adminModal").classList.add("hidden");
+      document.getElementById("adminPassInput").value = "";
+      document.getElementById("adminError").classList.add("hidden");
+    }
+
+    function verifyAdmin() {
+      const pass = document.getElementById("adminPassInput").value.trim();
+      if (pass === "adminperniagaan") {
+        document.getElementById("adminLoginSection").classList.add("hidden");
+        document.getElementById("adminDashboard").classList.remove("hidden");
+        renderAdminDashboard();
+        fetchAdminGuesses();
+      } else {
+        document.getElementById("adminError").classList.remove("hidden");
+      }
+    }
+
+    function renderAdminDashboard() {
+      const tilesContainer = document.getElementById("adminTilesList");
+      tilesContainer.innerHTML = "";
+      for (let i = 1; i <= 12; i++) {
+        const isOpened = openedTilesSet.has(i);
+        const card = document.createElement("div");
+        card.className = `p-2.5 rounded-xl border text-center font-bold ${
+          isOpened ? 'bg-emerald-100 border-emerald-400 text-emerald-800' : 'bg-slate-100 border-slate-300 text-slate-500'
+        }`;
+        card.innerHTML = `
+          <div class="text-sm">Jubin ${i}</div>
+          <div class="text-[10px] uppercase tracking-wider">${isOpened ? '✓ Terbuka' : 'Tertutup'}</div>
+        `;
+        tilesContainer.appendChild(card);
+      }
+    }
+
+    async function fetchAdminGuesses() {
+      const tbody = document.getElementById("guessesTableBody");
+      tbody.innerHTML = `<tr><td colspan="3" class="p-3 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin"></i> Memuat turun rekod terkini...</td></tr>`;
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getGuesses`);
+        const data = await res.json();
+        if (data.success && data.guesses && data.guesses.length > 0) {
+          tbody.innerHTML = "";
+          data.guesses.forEach(g => {
+            const tr = document.createElement("tr");
+            tr.className = "border-b hover:bg-slate-50";
+            tr.innerHTML = `
+              <td class="p-2.5 text-slate-500 whitespace-nowrap">${g.time}</td>
+              <td class="p-2.5 font-bold text-slate-800">${g.nama}</td>
+              <td class="p-2.5 text-indigo-700 font-semibold">${g.tekaan}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        } else {
+          tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400">Tiada rekod tekaan ditemui.</td></tr>`;
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500">Gagal memuat turun: ${err.message}</td></tr>`;
+      }
+    }
+
+    // Audio SFX
+    function playAudioSuccess() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(f, now + i * 0.1);
+          gain.gain.setValueAtTime(0.2, now + i * 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.35);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + i * 0.1);
+          osc.stop(now + i * 0.1 + 0.35);
+        });
+      } catch (e) {}
+    }
+
+    function playAudioFail() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.linearRampToValueAtTime(130, now + 0.4);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      } catch (e) {}
+    }
+  </script>
+</body>
+</html>
