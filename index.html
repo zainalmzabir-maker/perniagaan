@@ -9,7 +9,7 @@
   <!-- Font Awesome Icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    /* Puzzle Mosaic 4 Horisontal x 3 Menegak (12 Jubin) */
+    /* Puzzle 4 Horisontal x 3 Menegak */
     .tile {
       display: flex;
       flex-direction: column;
@@ -20,7 +20,7 @@
       font-size: 2.2rem;
       font-weight: 800;
       border: 1.5px solid #0f172a;
-      transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: default;
       user-select: none;
       position: relative;
@@ -34,14 +34,14 @@
       opacity: 0.9;
     }
 
-    /* KEKAL TERBUKA: Jubin menjadi lutsinar sepenuhnya mendedahkan gambar keseluruhan di belakang */
+    /* KEKAL TERBUKA: Jubin lutsinar mendedahkan gambar monyet & kuda di belakang */
     .tile.unlocked {
       background: transparent !important;
-      border-color: rgba(255, 255, 255, 0.2) !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
       color: transparent !important;
       opacity: 0 !important;
       pointer-events: none !important;
-      transform: scale(0.95);
+      transform: scale(0.96);
     }
 
     /* Kotak Jubin Lutsinar Panel Admin */
@@ -111,15 +111,28 @@
         </p>
       </div>
 
-      <!-- Container Grid Puzzle 4x3: Gambar Keseluruhan di Belakang -->
+      <!-- Container Grid Puzzle 4x3 -->
       <div class="max-w-2xl mx-auto mb-6">
-        <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border-4 border-slate-900 shadow-2xl bg-slate-900">
-          <!-- Gambar Penuh (gambar.jpg) -->
-          <img id="mainPuzzleImage" src="gambar.jpg" alt="Gambar Rahsia Keseluruhan" class="absolute inset-0 w-full h-full object-cover select-none" />
+        <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border-4 border-slate-900 shadow-2xl bg-slate-800 flex items-center justify-center">
           
-          <!-- 12 Jubin Penutup: Jubin yang dibuka kekal lutsinar mendedahkan gambar -->
-          <div id="puzzleBoard" class="absolute inset-0 grid grid-cols-4 grid-rows-3 gap-0">
-            <!-- 12 Jubin Dijana oleh JS -->
+          <!-- Notifikasi Ralat Sekiranya Fail gambar.jpg Belum Dikesan -->
+          <div id="imgErrorNotice" class="absolute inset-0 z-0 hidden flex flex-col items-center justify-center bg-slate-900 p-6 text-center text-white">
+            <i class="fa-solid fa-triangle-exclamation text-amber-400 text-4xl mb-2"></i>
+            <h4 class="font-bold text-base text-rose-400 mb-1">Fail Gambar Belum Ditemui</h4>
+            <p class="text-xs text-slate-300 max-w-sm mb-3">
+              Pastikan fail gambar monyet & kuda dinamakan <strong>gambar.jpg</strong> (huruf kecil) dan diletakkan di GitHub.
+            </p>
+            <button onclick="openAdminModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs px-4 py-2 rounded-lg">
+              Klik Sini Untuk Muat Naik Terus
+            </button>
+          </div>
+
+          <!-- Gambar Penuh (gambar.jpg) -->
+          <img id="mainPuzzleImage" src="gambar.jpg" alt="Gambar Rahsia" onerror="handleImageError(this)" class="absolute inset-0 w-full h-full object-cover select-none z-10" />
+          
+          <!-- 12 Jubin Penutup -->
+          <div id="puzzleBoard" class="absolute inset-0 grid grid-cols-4 grid-rows-3 gap-0 z-20">
+            <!-- Dijana oleh JS -->
           </div>
         </div>
         <div class="mt-2 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
@@ -134,7 +147,7 @@
           <i class="fa-solid fa-lightbulb text-yellow-200 text-lg"></i> SAYA TAHU! TEKA GAMBAR INI
         </button>
         <p class="text-[11px] text-slate-500 mt-2">
-          <i class="fa-regular fa-clock"></i> Tekaan keseluruhan gambar dan masa anda direkodkan terus kepada guru.
+          <i class="fa-regular fa-clock"></i> Tekaan keseluruhan gambar dan catatan masa anda direkodkan terus kepada guru.
         </p>
       </div>
     </section>
@@ -275,7 +288,7 @@
         </button>
       </div>
 
-      <!-- Bahagian Log Masuk Admin (TANPA SEBARANG CONTOH KATA LALUAN) -->
+      <!-- Bahagian Log Masuk Admin (Tanpa sebarang contoh kata laluan) -->
       <div id="adminLoginSection" class="my-auto py-8 max-w-sm mx-auto text-center w-full">
         <div class="w-14 h-14 bg-indigo-50 text-indigo-700 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
           <i class="fa-solid fa-lock"></i>
@@ -283,7 +296,6 @@
         <h4 class="font-bold text-slate-800 mb-1">Pengesahan Guru</h4>
         <p class="text-xs text-slate-500 mb-4">Sila masukkan kata laluan admin untuk akses:</p>
         <div class="flex gap-2">
-          <!-- Input bersih tanpa sebarang placeholder contoh -->
           <input type="password" id="adminPassInput" class="border rounded-xl p-2.5 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-slate-50" />
           <button onclick="verifyAdmin()" class="bg-indigo-900 hover:bg-indigo-950 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow">
             Masuk
@@ -317,11 +329,27 @@
 
           <!-- KONTENA GAMBAR SEBENAR + OVERLAY LUTSINAR -->
           <div class="max-w-xl mx-auto">
-            <div class="relative w-full aspect-[4/3] rounded-xl overflow-hidden border-2 border-amber-400/80 shadow-2xl bg-black">
-              <img id="adminPreviewImg" src="gambar.jpg" alt="Gambar Sebenar Monyet & Kuda" class="absolute inset-0 w-full h-full object-cover select-none" />
-              <div id="adminPreviewBoard" class="absolute inset-0 grid grid-cols-4 grid-rows-3 gap-1 p-1">
+            <div class="relative w-full aspect-[4/3] rounded-xl overflow-hidden border-2 border-amber-400/80 shadow-2xl bg-slate-950 flex items-center justify-center">
+              <img id="adminPreviewImg" src="gambar.jpg" alt="Gambar Sebenar Monyet & Kuda" onerror="handleImageError(this)" class="absolute inset-0 w-full h-full object-cover select-none z-10" />
+              <div id="adminPreviewBoard" class="absolute inset-0 grid grid-cols-4 grid-rows-3 gap-1 p-1 z-20">
                 <!-- 12 Jubin Lutsinar Dijana oleh JS -->
               </div>
+            </div>
+
+            <!-- BUTANG MUAT NAIK GAMBAR TERUS DARI PERANTI (JIKA PERLU) -->
+            <div class="mt-3 bg-slate-800/90 border border-slate-700 p-2.5 rounded-xl flex flex-wrap items-center justify-between gap-2">
+              <div class="text-left">
+                <span class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                  <i class="fa-solid fa-cloud-arrow-up"></i> Muat Naik / Tukar Fail Gambar Terus
+                </span>
+                <p class="text-[10px] text-slate-300">
+                  Pilih fail gambar monyet & kuda dari komputer/telefon jika fail gambar di GitHub belum dimuat naik.
+                </p>
+              </div>
+              <label class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg cursor-pointer transition shadow">
+                <span>Pilih Gambar</span>
+                <input type="file" id="localImgPicker" accept="image/*" class="hidden" onchange="loadCustomImage(event)">
+              </label>
             </div>
           </div>
         </div>
@@ -408,7 +436,7 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJkcU5x_Kp7QsfezSb1bXtSl8ZXA1WywNDsXgKnWbNii7xWLlEe1k3VopMCAC0eJe7gw/exec";
 
-    // DATA MASTER 12 MURID
+    // 1. DATA MASTER 12 MURID
     let STUDENTS_DATA = [
       { nama: "AMMAR SHAKIR BIN MAZLAN", ic: "091118010893", noJubin: 1, opened: false },
       { nama: "MUHAMMAD AZIQ THAQIF BIN MOHD ISA", ic: "090716011533", noJubin: 2, opened: false },
@@ -452,19 +480,39 @@
     let current15Questions = [];
     let currentOverlayAlpha = 0.50;
 
-    // ========================================================
-    // MEMULAKAN SISTEM & AUTO-POLLING KEKAL TERBUKA
-    // ========================================================
+    // Senarai percubaan nama fail imej jika gambar.jpg 404
+    const fallbackImageNames = ["gambar.jpg", "gambar.png", "gambar.jpeg", "Gambar.jpg", "GAMBAR.JPG", "gambar.JPG"];
+    let fallbackIndex = 0;
+
     document.addEventListener("DOMContentLoaded", () => {
+      // Semak jika ada gambar tersimpan dalam localStorage
+      const savedImg = localStorage.getItem("puzzle_custom_image");
+      if (savedImg) {
+        document.getElementById("mainPuzzleImage").src = savedImg;
+        document.getElementById("adminPreviewImg").src = savedImg;
+      }
+
       buildPuzzleGrid();
       populateDropdowns();
       refreshDataFromServer();
 
-      // AUTO-POLLING: Semak status pembukaan jubin setiap 8 saat supaya skrin semua murid sentiasa selaras
+      // AUTO-POLLING: Semak jubin dibuka setiap 7 saat
       setInterval(() => {
         refreshDataFromServer(false);
-      }, 8000);
+      }, 7000);
     });
+
+    // PENGENDALI RALAT IMEJ PINTAR
+    function handleImageError(imgEl) {
+      fallbackIndex++;
+      if (fallbackIndex < fallbackImageNames.length) {
+        imgEl.src = fallbackImageNames[fallbackIndex];
+      } else {
+        // Jika semua nama fail gagal ditemui
+        const errorNotice = document.getElementById("imgErrorNotice");
+        if (errorNotice) errorNotice.classList.remove("hidden");
+      }
+    }
 
     function buildPuzzleGrid() {
       const board = document.getElementById("puzzleBoard");
@@ -501,7 +549,6 @@
       });
     }
 
-    // MENYEMAK STATUS JUBIN TERBUKA DARI GOOGLE SHEET
     async function refreshDataFromServer(showSpin = true) {
       const syncIcon = document.getElementById("syncIcon");
       if (showSpin && syncIcon) syncIcon.classList.add("fa-spin");
@@ -516,14 +563,12 @@
           }
 
           if (data.openedTiles && Array.isArray(data.openedTiles)) {
-            // Segerak jubin yang telah dibuka
             data.openedTiles.forEach(num => {
               openedTilesSet.add(Number(num));
               const el = document.getElementById(`tile-${num}`);
               if (el) el.classList.add("unlocked");
             });
 
-            // Kemaskini paparan jika modal admin sedang terbuka
             if (!document.getElementById("adminDashboard").classList.contains("hidden")) {
               renderAdminPreviewGrid();
               renderAdminStatusList();
@@ -531,7 +576,6 @@
           }
         }
 
-        // Ambil soalan jika ada
         const qRes = await fetch(`${SCRIPT_URL}?action=getQuestions&_t=${Date.now()}`);
         const qData = await qRes.json();
         if (qData.success && qData.questions && qData.questions.length >= 15) {
@@ -556,9 +600,7 @@
       document.getElementById("puzzleSection").scrollIntoView({ behavior: "smooth" });
     }
 
-    // ========================================================
-    // LOG MASUK & SESI KUIZ (15/15)
-    // ========================================================
+    // LOG MASUK & SESI KUIZ
     function handleStudentLogin(e) {
       e.preventDefault();
       const nama = document.getElementById("studentSelect").value;
@@ -656,12 +698,9 @@
         playAudioSuccess();
         icon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i>`;
         title.innerHTML = `<span class="text-emerald-600">LUAR BIASA! 15 / 15 BETUL!</span>`;
-        desc.innerHTML = `Tahniah <strong>${currentStudent.nama}</strong>! Semua 15 soalan tepat. <strong>Jubin ${currentStudent.noJubin}</strong> anda kini telah <strong>DIBUKA SECARA KEKAL</strong> untuk tatapan SEMUA murid. Teruskan melihat puzzle utama bersama rakan-rakan untuk meneka gambar keseluruhan!`;
+        desc.innerHTML = `Tahniah <strong>${currentStudent.nama}</strong>! Semua 15 soalan tepat. <strong>Jubin ${currentStudent.noJubin}</strong> anda kini telah <strong>DIBUKA SECARA KEKAL</strong> untuk tatapan SEMUA murid mendedahkan sebahagian gambar keseluruhan!`;
 
-        // Buka jubin pada skrin semasa
         unlockTileUI(currentStudent.noJubin);
-
-        // Hantar pembukaan kekal ke Google Sheet
         await sendUnlockTileToServer(currentStudent.nama, currentStudent.noJubin);
       } else {
         playAudioFail();
@@ -671,21 +710,16 @@
       }
     }
 
-    // PENGHANTARAN TERUS KEKAL KE GOOGLE SHEET
     async function sendUnlockTileToServer(nama, noJubin) {
       try {
         const url = `${SCRIPT_URL}?action=unlockTile&nama=${encodeURIComponent(nama)}&noJubin=${noJubin}&_t=${Date.now()}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        console.log("Status pembukaan jubin di Google Sheet:", data);
+        await fetch(url);
       } catch (err) {
-        console.warn("Ralat segerak buka jubin:", err);
+        console.warn("Ralat kemaskini jubin:", err);
       }
     }
 
-    // ========================================================
     // TEKA GAMBAR KESELURUHAN
-    // ========================================================
     function openGuessModal() {
       document.getElementById("guessModal").classList.remove("hidden");
       if (currentStudent) {
@@ -711,7 +745,7 @@
       try {
         await fetch(`${SCRIPT_URL}?action=submitGuess&nama=${encodeURIComponent(nama)}&tekaan=${encodeURIComponent(tekaan)}&_t=${Date.now()}`);
       } catch (err) {
-        console.warn("Ralat rekod tekaan:", err);
+        console.warn("Ralat hantar tekaan:", err);
       }
 
       alert(`Tahniah ${nama}! Tekaan keseluruhan gambar: "${tekaan}" telah direkodkan bersama tanda masa.`);
@@ -721,9 +755,7 @@
       closeGuessModal();
     }
 
-    // ========================================================
-    // PANEL GURU (ADMIN) & PRATONTON JUBIN LUTSINAR
-    // ========================================================
+    // PANEL GURU (ADMIN)
     function openAdminModal() {
       document.getElementById("adminModal").classList.remove("hidden");
     }
@@ -777,6 +809,23 @@
           </span>
         `;
         board.appendChild(tileBox);
+      }
+    }
+
+    // FUNGSI MUAT NAIK GAMBAR TERUS DARI PERANTI (SIMPAN KE LOCALSTORAGE)
+    function loadCustomImage(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const imgUrl = evt.target.result;
+          localStorage.setItem("puzzle_custom_image", imgUrl);
+          document.getElementById("mainPuzzleImage").src = imgUrl;
+          document.getElementById("adminPreviewImg").src = imgUrl;
+          document.getElementById("imgErrorNotice").classList.add("hidden");
+          alert("Gambar monyet & kuda berjaya dimuat naik dan disimpan serta-merta ke dalam paparan puzzle!");
+        };
+        reader.readAsDataURL(file);
       }
     }
 
