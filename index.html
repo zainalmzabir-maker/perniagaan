@@ -97,6 +97,16 @@
   <!-- Kandungan Utama -->
   <main class="max-w-6xl mx-auto px-4 py-6 w-full flex-grow space-y-6">
     
+    <!-- BANNER PERINGATAN & MOTIVASI KERJASAMA -->
+    <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white p-4 md:p-5 rounded-2xl shadow-md flex items-center gap-4 border border-amber-300/40 ease-fluid">
+      <div class="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-xl shrink-0 shadow-inner">
+        <i class="fa-solid fa-bullhorn text-yellow-200"></i>
+      </div>
+      <div class="text-xs md:text-sm font-bold leading-relaxed tracking-wide">
+        Membuka jubin anda sendiri tidak akan membantu anda menjawab puzzle gambar dengan mudah. Galakkan rakan-rakan anda yang lain membuka jubin masing-masing!
+      </div>
+    </div>
+
     <!-- 1. PUZZLE MOSAIC 4x3 (TATAPAN SEMUA MURID) -->
     <section id="puzzleSection" class="bg-white rounded-2xl shadow-sm p-5 md:p-6 border border-slate-200 ease-fluid">
       <div class="text-center mb-5">
@@ -367,7 +377,7 @@
             <span class="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded font-bold">Auto-Sync Semua Murid</span>
           </div>
           <p class="text-[11px] text-amber-800 leading-relaxed">
-            Muat naik fail gambar (JPG/PNG) dari peranti anda. Gambar akan dikemas kini serta-merta di skrin murid tanpa masalah *cache*.
+            Muat naik fail gambar (JPG/PNG) dari peranti anda. Gambar akan dikemas kini serta-merta di skrin murid tanpa masalah cache.
           </p>
 
           <div class="flex flex-wrap items-center gap-2">
@@ -501,7 +511,7 @@
       populateDropdowns();
       refreshDataFromServer();
 
-      // Semak kemas kini langsung setiap 6 saat tanpa mengganggu dropdown yang sedang dipilih
+      // Semak kemas kini langsung setiap 6 saat tanpa mengganggu pilihan murid
       setInterval(() => {
         refreshDataFromServer(false);
       }, 6000);
@@ -522,7 +532,6 @@
       }
     }
 
-    // Membina dropdown pilihan murid dengan mengekalkan nilai yang telah dipilih pengguna
     function populateDropdowns() {
       const select = document.getElementById("studentSelect");
       const guessSelect = document.getElementById("guessStudentSelect");
@@ -545,14 +554,12 @@
         guessSelect.appendChild(opt2);
       });
 
-      // Kekalkan nilai yang sedang dipilih agar tidak ter-reset
       if (currentSelectedLogin) select.value = currentSelectedLogin;
       if (currentSelectedGuess) guessSelect.value = currentSelectedGuess;
 
       dropdownsInitialized = true;
     }
 
-    // Ambil data langsung dari Google Sheet dengan pemutus simpanan sementara
     async function refreshDataFromServer(showSpin = true) {
       const syncIcon = document.getElementById("syncIcon");
       if (showSpin && syncIcon) syncIcon.classList.add("fa-spin");
@@ -562,7 +569,6 @@
         const data = await res.json();
         
         if (data.success) {
-          // 1. Kemas kini gambar semasa
           if (data.imageUrl) {
             let activeUrl = data.imageUrl;
             if (activeUrl === "gambar.png" || activeUrl.startsWith("gambar.")) {
@@ -576,16 +582,13 @@
             }
           }
 
-          // 2. Kemas kini senarai murid
           if (data.students && data.students.length === 12) {
             STUDENTS_DATA = data.students;
-            // Hanya kemas kini pilihan jika modal tekaan sedang tertutup
             if (document.getElementById("guessModal").classList.contains("hidden")) {
               populateDropdowns();
             }
           }
 
-          // 3. Kemas kini jubin dibuka
           if (data.openedTiles && Array.isArray(data.openedTiles)) {
             openedTilesSet.clear();
             for (let i = 1; i <= 12; i++) {
@@ -598,7 +601,6 @@
               if (el) el.classList.add("unlocked");
             });
 
-            // Hanya kemas kini peta pratonton, JANGAN sentuh jadual penetapan yang sedang diedit
             if (!document.getElementById("adminDashboard").classList.contains("hidden")) {
               renderAdminPreviewGrid();
               renderAdminStatusList();
@@ -707,7 +709,6 @@
         const result = await res.json();
         if (result.success) {
           notice.innerHTML = `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-circle-check"></i> ${result.message}</span>`;
-          // Kemas kini data tempatan serta-merta
           newAssignments.forEach(item => {
             const student = STUDENTS_DATA.find(s => s.nama === item.nama);
             if (student) student.noJubin = item.noJubin;
@@ -992,7 +993,7 @@
       if (pass === "adminperniagaan") {
         document.getElementById("adminLoginSection").classList.add("hidden");
         document.getElementById("adminDashboard").classList.remove("hidden");
-        renderAdminStudentAssignments(); // Dijana SEKALI sahaja di sini
+        renderAdminStudentAssignments();
         renderAdminPreviewGrid();
         renderAdminStatusList();
         fetchAdminGuesses();
