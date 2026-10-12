@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Misi Teka Gambar & Kuiz Perniagaan SPM</title>
-  <!-- Tailwind CSS -->
+  <title>WEBAPP PdPr PERNIAGAAN SEMEKAR</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Font Awesome Icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    /* Puzzle 4 Horizontal x 3 Tingkat (12 Jubin) */
+    /* Puzzle Mosaic 4 Horisontal x 3 Menegak (12 Jubin) */
     .puzzle-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -35,7 +35,7 @@
       font-size: 2.2rem;
       font-weight: 800;
       border: 1.5px solid #0f172a;
-      transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: default;
       user-select: none;
       position: relative;
@@ -59,8 +59,41 @@
       opacity: 0;
     }
 
+    /* Peta Jubin Lutsinar 50% untuk Admin */
+    .admin-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      aspect-ratio: 4 / 3;
+      position: relative;
+      background-image: url('gambar.jpg');
+      background-size: cover;
+      background-position: center;
+      border: 3px solid #334155;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .admin-tile-overlay {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.50); /* Lutsinar 50% */
+      border: 1.5px dashed rgba(255, 255, 255, 0.75);
+      color: #ffffff;
+      padding: 4px;
+      text-align: center;
+      backdrop-filter: blur(0.5px);
+      transition: background 0.2s;
+    }
+
+    .admin-tile-overlay:hover {
+      background: rgba(30, 58, 138, 0.30);
+    }
+
     .fade-in {
-      animation: fadeIn 0.4s ease-in-out;
+      animation: fadeIn 0.35s ease-in-out;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
@@ -79,13 +112,13 @@
         </div>
         <div>
           <h1 class="text-lg md:text-xl font-black tracking-wide leading-tight">
-            PERNIAGAAN TINGKATAN 4 & 5
+            WEBAPP PdPr PERNIAGAAN SEMEKAR
           </h1>
           <p class="text-xs text-indigo-200">Misi Teka Gambar Misteri &bull; Kuiz Objektif SPM</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="refreshDataFromServer()" title="Kemaskini Status Jubin" class="px-3 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-xs font-semibold rounded-lg border border-indigo-600 transition flex items-center gap-1.5">
+        <button onclick="refreshDataFromServer()" title="Muat Semula Status" class="px-3 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-xs font-semibold rounded-lg border border-indigo-600 transition flex items-center gap-1.5">
           <i id="syncIcon" class="fa-solid fa-arrows-rotate"></i> Kemaskini
         </button>
         <button onclick="openAdminModal()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-indigo-950 text-xs font-bold rounded-lg transition flex items-center gap-1.5 shadow">
@@ -101,12 +134,12 @@
     <!-- 1. PUZZLE MOSAIC 4x3 -->
     <section class="bg-white rounded-2xl shadow-lg p-5 md:p-6 border border-slate-200">
       <div class="text-center mb-5">
-        <span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-xs font-bold rounded-full mb-1">
+        <span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-800 text-xs font-bold rounded-full mb-2">
           SUSUNAN 4 HORIZONTAL &times; 3 MENINGKAT (12 JUBIN)
         </span>
-        <h2 class="text-xl md:text-2xl font-black text-slate-800">PUZZLE GAMBAR MISTERI</h2>
-        <p class="text-sm text-slate-600 max-w-xl mx-auto">
-          Setiap murid memegang 1 jubin khas. Selesaikan <strong>15/15 soalan betul</strong> untuk membuka jubin anda!
+        <h2 class="text-xl md:text-2xl font-black text-slate-800 mb-2">PUZZLE GAMBAR MISTERI</h2>
+        <p class="text-sm text-slate-600 max-w-3xl mx-auto leading-relaxed">
+          Setiap murid memegang 1 jubin khas. Selesaikan 15/15 soalan betul untuk membuka jubin anda! Teka gambar bila-bila masa &amp; jawapan yang paling tepat akan menerima hadiah misteri. Perlu betul 15 soalan untuk membuka jubin masing-masing namun boleh menjawab berkali-kali supaya dapat mencapai 15 soalan betul pada bila-bila masa.
         </p>
       </div>
 
@@ -123,7 +156,7 @@
           <i class="fa-solid fa-lightbulb text-yellow-200 text-lg"></i> SAYA TAHU! TEKA GAMBAR INI
         </button>
         <p class="text-[11px] text-slate-500 mt-2">
-          <i class="fa-regular fa-clock"></i> Masa dan jawapan tekaan anda direkodkan terus ke Google Sheet guru.
+          <i class="fa-regular fa-clock"></i> Catatan masa dan tekaan anda direkodkan terus ke Google Sheet guru.
         </p>
       </div>
     </section>
@@ -147,13 +180,13 @@
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nama Murid</label>
             <select id="studentSelect" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-slate-50">
-              <option value="">-- Sila Pilih Nama Anda --</option>
+              <option value="">-- Memuatkan Senarai Murid... --</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kata Laluan (No. IC Tanpa Sempang)</label>
-            <input type="password" id="icInput" required placeholder="Contoh: 091130010503" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-slate-50" />
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kata Laluan</label>
+            <input type="password" id="icInput" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-slate-50" />
           </div>
 
           <button type="submit" class="w-full bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-3.5 rounded-xl transition text-sm shadow-md flex items-center justify-center gap-2">
@@ -180,7 +213,7 @@
         <div id="quizFormWrapper">
           <div class="mb-4 text-xs bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-lg flex items-center gap-2">
             <i class="fa-solid fa-circle-exclamation text-base"></i>
-            <span><strong>Syarat Wajib:</strong> Anda mesti betul 15/15 soalan untuk membuka jubin. Selagi belum terbuka, anda boleh mengulang seberapa banyak sesi baharu!</span>
+            <span><strong>Syarat Wajib:</strong> Anda mesti mendapat <strong>15/15 soalan betul</strong> untuk membuka jubin. Jika ada sebarang kesalahan, anda boleh mencuba lagi sesi baharu!</span>
           </div>
 
           <form id="activeQuizForm" onsubmit="submitQuizAnswers(event)" class="space-y-6">
@@ -190,7 +223,7 @@
 
             <div class="pt-6 border-t flex justify-end">
               <button type="submit" class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 px-10 rounded-xl shadow-lg transition text-sm flex items-center justify-center gap-2">
-                <i class="fa-solid fa-paper-plane"></i> HANTAR JAWAPAN & SEMAK
+                <i class="fa-solid fa-paper-plane"></i> HANTAR JAWAPAN &amp; SEMAK
               </button>
             </div>
           </form>
@@ -236,7 +269,7 @@
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">Tekaan Anda (Perkataan Bebas)</label>
-          <input type="text" id="guessInput" placeholder="Cth: Monyet naik kuda pakai helmet" required class="w-full border rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none" />
+          <input type="text" id="guessInput" placeholder="Tuliskan tekaan anda di sini" required class="w-full border rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none" />
         </div>
         <button type="submit" id="btnSubmitGuess" class="w-full bg-amber-500 hover:bg-amber-600 text-indigo-950 font-black py-3 rounded-xl text-sm shadow transition flex items-center justify-center gap-2">
           <i class="fa-solid fa-paper-plane"></i> Hantar Tekaan Sekarang
@@ -246,9 +279,10 @@
   </div>
 
   <!-- MODAL PANEL GURU (ADMIN) -->
-  <div id="adminModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl max-h-[90vh] flex flex-col fade-in">
-      <div class="flex justify-between items-center mb-4 border-b pb-3">
+  <div id="adminModal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm hidden flex items-center justify-center p-3 md:p-5 z-50">
+    <div class="bg-white rounded-2xl max-w-4xl w-full p-5 md:p-6 shadow-2xl max-h-[92vh] flex flex-col fade-in">
+      
+      <div class="flex justify-between items-center mb-3 border-b pb-3">
         <h3 class="font-black text-lg text-indigo-950 flex items-center gap-2">
           <i class="fa-solid fa-shield-halved text-amber-500"></i> Panel Kawalan Guru
         </h3>
@@ -258,36 +292,77 @@
       </div>
 
       <!-- Bahagian Log Masuk Admin -->
-      <div id="adminLoginSection" class="my-auto py-6 max-w-sm mx-auto text-center w-full">
-        <div class="w-12 h-12 bg-indigo-50 text-indigo-700 rounded-full flex items-center justify-center mx-auto mb-3 text-xl">
+      <div id="adminLoginSection" class="my-auto py-8 max-w-sm mx-auto text-center w-full">
+        <div class="w-14 h-14 bg-indigo-50 text-indigo-700 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
           <i class="fa-solid fa-lock"></i>
         </div>
-        <p class="text-xs text-slate-600 mb-3 font-semibold">Masukkan kata laluan guru:</p>
+        <h4 class="font-bold text-slate-800 mb-1">Pengesahan Guru</h4>
+        <p class="text-xs text-slate-500 mb-4">Sila masukkan kata laluan admin untuk akses penuh:</p>
         <div class="flex gap-2">
           <input type="password" id="adminPassInput" placeholder="Kata laluan" class="border rounded-xl p-2.5 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-slate-50" />
-          <button onclick="verifyAdmin()" class="bg-indigo-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow">
+          <button onclick="verifyAdmin()" class="bg-indigo-900 hover:bg-indigo-950 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow">
             Masuk
           </button>
         </div>
-        <p id="adminError" class="text-rose-500 text-xs mt-2 hidden font-bold">Kata laluan salah!</p>
+        <p id="adminError" class="text-rose-500 text-xs mt-2 hidden font-bold">Kata laluan tidak tepat!</p>
       </div>
 
       <!-- Papan Pemuka Admin -->
-      <div id="adminDashboard" class="hidden flex-1 overflow-y-auto space-y-6">
+      <div id="adminDashboard" class="hidden flex-1 overflow-y-auto space-y-6 pr-1">
+        
+        <!-- PETA JUBIN 50% LUTSINAR DENGAN GAMBAR SEBENAR -->
+        <div class="bg-slate-900 text-white p-4 rounded-2xl shadow">
+          <div class="flex flex-wrap justify-between items-center mb-3 gap-2">
+            <div>
+              <h4 class="text-sm font-black text-amber-400 flex items-center gap-2">
+                <i class="fa-solid fa-eye"></i> PETA KEDUDUKAN GAMBAR VS JUBIN (50% LUTSINAR)
+              </h4>
+              <p class="text-[11px] text-slate-300">
+                Gambar sebenar kelihatan di belakang jubin lutsinar supaya guru mengetahui kedudukan setiap gambar.
+              </p>
+            </div>
+            <span class="text-[11px] bg-slate-800 px-2.5 py-1 rounded-md text-slate-300 border border-slate-700">
+              Grid 4 &times; 3
+            </span>
+          </div>
+
+          <div class="max-w-xl mx-auto">
+            <div id="adminPreviewBoard" class="admin-preview-grid">
+              <!-- 12 jubin lutsinar 50% dijana secara dinamik oleh JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- BUTANG RESET KESELURUHAN KUIZ -->
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-4 flex flex-wrap justify-between items-center gap-3">
+          <div>
+            <h5 class="text-xs font-black text-rose-800 uppercase tracking-wide flex items-center gap-1.5">
+              <i class="fa-solid fa-triangle-exclamation"></i> Tetapan Semula (Reset All)
+            </h5>
+            <p class="text-xs text-rose-700">
+              Tindakan ini akan <strong>menutup semula kesemua 12 jubin</strong> dan <strong>memadam semua rekod tekaan murid</strong> di Google Sheet.
+            </p>
+          </div>
+          <button onclick="handleResetAllQuiz()" id="btnResetQuiz" class="bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-black text-xs px-4 py-2.5 rounded-lg shadow transition flex items-center gap-1.5">
+            <i class="fa-solid fa-rotate-left"></i> SET SEMULA KESELURUHAN KUIZ
+          </button>
+        </div>
+
+        <!-- JADUAL REKOD TEKAAN GAMBAR -->
         <div>
           <div class="flex justify-between items-center mb-2">
             <h4 class="text-xs font-black text-slate-700 uppercase tracking-wider">
-              Rekod Tekaan Gambar Murid (Terkini & Terpantas)
+              Rekod Tekaan Gambar Murid (Masa &amp; Ketepatan)
             </h4>
             <button onclick="fetchAdminGuesses()" class="text-xs text-indigo-600 hover:underline font-bold">
-              <i class="fa-solid fa-rotate"></i> Muat Semula
+              <i class="fa-solid fa-rotate"></i> Muat Semula Rekod
             </button>
           </div>
-          <div class="overflow-x-auto border rounded-xl max-h-56">
+          <div class="overflow-x-auto border rounded-xl max-h-52">
             <table class="w-full text-left text-xs">
               <thead class="bg-slate-100 border-b text-slate-700 font-bold sticky top-0">
                 <tr>
-                  <th class="p-2.5">Masa</th>
+                  <th class="p-2.5">Masa Catatan</th>
                   <th class="p-2.5">Nama Murid</th>
                   <th class="p-2.5">Teks Tekaan</th>
                 </tr>
@@ -299,38 +374,40 @@
           </div>
         </div>
 
+        <!-- STATUS SEMASA 12 JUBIN -->
         <div>
           <h4 class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2">
-            Status Pembukaan 12 Jubin (4 &times; 3)
+            Status Pembukaan Semasa 12 Jubin
           </h4>
-          <div id="adminTilesList" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 text-xs">
-            <!-- Senarai Jubin -->
+          <div id="adminTilesList" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2 text-xs">
+            <!-- Kad status jubin -->
           </div>
         </div>
+
       </div>
     </div>
   </div>
 
+  <!-- Footer -->
   <footer class="bg-white border-t py-4 text-center text-xs text-slate-500">
-    Web App Pembelajaran Perniagaan Tingkatan 4 & 5 &bull; SPM EduTech
+    Web App Pembelajaran Perniagaan Tingkatan 4 &amp; 5 &bull; A_Null
   </footer>
 
   <!-- ======================================================== -->
   <!-- JAVASCRIPT APLIKASI WEB                                  -->
   <!-- ======================================================== -->
   <script>
-    // 1. URL Web App Google Apps Script
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJkcU5x_Kp7QsfezSb1bXtSl8ZXA1WywNDsXgKnWbNii7xWLlEe1k3VopMCAC0eJe7gw/exec";
 
-    // 2. Senarai Tepat 12 Murid (Jubin 1 hingga 12)
+    // Senarai 12 Murid dengan Agihan Jubin Terkini
     let STUDENTS_DATA = [
-      { nama: "ADAM RAYYAN BIN KHAIRUL ANUAR", ic: "091130010503", noJubin: 1, opened: false },
-      { nama: "AMMAR SHAKIR BIN MAZLAN", ic: "091118010893", noJubin: 2, opened: false },
-      { nama: "HARINI A/P VADIVELAN", ic: "090817011612", noJubin: 3, opened: false },
+      { nama: "AMMAR SHAKIR BIN MAZLAN", ic: "091118010893", noJubin: 1, opened: false },
+      { nama: "MUHAMMAD AZIQ THAQIF BIN MOHD ISA", ic: "090716011533", noJubin: 2, opened: false },
+      { nama: "ADAM RAYYAN BIN KHAIRUL ANUAR", ic: "091130010503", noJubin: 3, opened: false },
       { nama: "MUHAMAD AFIQ BIN NORAZLI", ic: "090715011531", noJubin: 4, opened: false },
-      { nama: "MUHAMMAD AZIQ THAQIF BIN MOHD ISA", ic: "090716011533", noJubin: 5, opened: false },
+      { nama: "NUR FARAH ALYSAH BINTI ZULKEFPLAI", ic: "090514011076", noJubin: 5, opened: false },
       { nama: "MUHAMMAD DANIAL ARASH BIN SARKAN", ic: "091203011751", noJubin: 6, opened: false },
-      { nama: "NUR FARAH ALYSAH BINTI ZULKEFPLAI", ic: "090514011076", noJubin: 7, opened: false },
+      { nama: "HARINI A/P VADIVELAN", ic: "090817011612", noJubin: 7, opened: false },
       { nama: "NURFAHANA BINTI MOHD YUSUF", ic: "090924010850", noJubin: 8, opened: false },
       { nama: "PUTERI NATASYA ALYAA BINTI ZAIDI", ic: "090430011036", noJubin: 9, opened: false },
       { nama: "PUTERI QALEESYA ARYANA BINTI BAHRIN", ic: "091019011786", noJubin: 10, opened: false },
@@ -338,7 +415,6 @@
       { nama: "TAN TAI FENG", ic: "090609011693", noJubin: 12, opened: false }
     ];
 
-    // 3. Bank Soalan Perniagaan Tingkatan 4 & 5 (SPM)
     let QUESTION_BANK = [
       { id: 1, q: "Apakah tujuan utama perniagaan berorientasikan keuntungan?", options: ["Memaksimumkan keuntungan dan menjamin kelangsungan perniagaan", "Menyediakan perkhidmatan percuma kepada orang ramai", "Mengutip cukai bagi pihak kerajaan", "Mengawal harga pasaran barangan keperluan"], answer: "A" },
       { id: 2, q: "Antara pemilikan perniagaan berikut, yang manakah mempunyai liabiliti tidak terhad?", options: ["Syarikat Sendirian Berhad", "Milikan Tunggal", "Syarikat Awam Berhad", "Koperasi Berhad"], answer: "B" },
@@ -359,12 +435,7 @@
       { id: 17, q: "Campuran pemasaran (4P) terdiri daripada:", options: ["Product, Price, Place, Promotion", "People, Process, Profit, Product", "Planning, Price, Partner, Position", "Purchase, Production, Price, Packaging"], answer: "A" },
       { id: 18, q: "Mengapakah sesebuah perniagaan perlu mengekalkan tahap kecairan yang tinggi?", options: ["Untuk membayar obligasi hutang jangka pendek tepat pada masanya", "Untuk membolehkan syarikat membeli tanah secara tunai", "Supaya boleh memberi diskaun percuma kepada semua pelanggan", "Untuk mengelakkan pembayaran dividen kepada pemegang syer"], answer: "A" },
       { id: 19, q: "Dalam analisis SWOT, aspek 'Kekuatan' dan 'Kelemahan' merujuk kepada:", options: ["Faktor persekitaran dalaman perniagaan", "Faktor persekitaran luaran pasaran", "Dasar ekonomi kerajaan global", "Keadaan inflasi dan deflasi semasa"], answer: "A" },
-      { id: 20, q: "Kesan inflasi yang berterusan terhadap pengguna ialah:", options: ["Kuasa beli pengguna merosot akibat kenaikan harga barang", "Pendapatan benar pengguna meningkat secara drastik", "Semua barangan import menjadi lebih murah", "Kadar pengangguran berkurang secara automatik"], answer: "A" },
-      { id: 21, q: "Apakah maksud sumber fizikal dalam sesebuah organisasi perniagaan?", options: ["Aset ketara seperti bangunan, mesin, kilang dan stok", "Kemahiran dan pengalaman pekerja", "Lesen perisian dan hak cipta terpelihara", "Modal tunai yang disimpan di dalam akaun bank"], answer: "A" },
-      { id: 22, q: "Antara berikut, yang manakah contoh sumber teknologi?", options: ["Harta intelek dan lesen perisian", "Kenderaan pengangkutan syarikat", "Bahan mentah di dalam gudang", "Bangunan pejabat urusan"], answer: "A" },
-      { id: 23, q: "Dokumen perniagaan yang dikeluarkan oleh pembekal untuk membetulkan kesilapan kurangan caj dalam invois ialah:", options: ["Nota Debit", "Nota Kredit", "Resit Rasmi", "Baucar Pembayaran"], answer: "A" },
-      { id: 24, q: "Apakah kelebihan pembiayaan melalui sewa beli?", options: ["Perniagaan dapat menggunakan aset modal sebelum membayarnya secara penuh", "Kadar faedah adalah percuma tanpa sebarang caj", "Hak milik aset berpindah kepada pembeli serta-merta pada hari pertama", "Tidak memerlukan sebarang bayaran ansuran bulanan"], answer: "A" },
-      { id: 25, q: "Agensi kerajaan manakah yang menyediakan latihan keusahawanan dan skim pembiayaan MARA?", options: ["Majlis Amanah Rakyat (MARA)", "Kementerian Luar Negeri", "Bank Negara Malaysia (BNM)", "Lembaga Hasil Dalam Negeri (LHDN)"], answer: "A" }
+      { id: 20, q: "Kesan inflasi yang berterusan terhadap pengguna ialah:", options: ["Kuasa beli pengguna merosot akibat kenaikan harga barang", "Pendapatan benar pengguna meningkat secara drastik", "Semua barangan import menjadi lebih murah", "Kadar pengangguran berkurang secara automatik"], answer: "A" }
     ];
 
     let openedTilesSet = new Set();
@@ -372,7 +443,7 @@
     let current15Questions = [];
 
     // ========================================================
-    // MEMULAKAN SISTEM (INITIALIZATION)
+    // INITIALIZATION
     // ========================================================
     document.addEventListener("DOMContentLoaded", () => {
       buildPuzzleGrid();
@@ -430,6 +501,11 @@
           }
 
           if (data.openedTiles && Array.isArray(data.openedTiles)) {
+            openedTilesSet.clear();
+            for (let i = 1; i <= 12; i++) {
+              const el = document.getElementById(`tile-${i}`);
+              if (el) el.classList.remove("unlocked");
+            }
             data.openedTiles.forEach(num => unlockTileUI(num));
           }
         }
@@ -440,7 +516,7 @@
           QUESTION_BANK = qData.questions;
         }
       } catch (err) {
-        console.warn("Memuatkan senarai tempatan:", err);
+        console.warn("Ralat segerak data:", err);
       } finally {
         if (syncIcon) syncIcon.classList.remove("fa-spin");
       }
@@ -470,7 +546,7 @@
 
       const studentIC = String(found.noIc).trim().replace(/-/g, "");
       if (studentIC !== icEntered && studentIC !== ("0" + icEntered) && ("0" + studentIC) !== icEntered) {
-        alert("Kata laluan (No. IC tanpa sempang) tidak sepadan! Sila masukkan nombor IC yang betul.");
+        alert("Kata laluan tidak padan! Sila pastikan anda memasukkan 12 digit nombor IC.");
         return;
       }
 
@@ -562,7 +638,7 @@
         playAudioFail();
         icon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
         title.innerHTML = `<span class="text-rose-600">Skor Anda: ${score} / 15</span>`;
-        desc.innerHTML = `Untuk membuka Jubin ${currentStudent.noJubin}, anda perlu memperoleh markah penuh <strong>15/15</strong>. Sila cuba lagi sesi baharu sekarang!`;
+        desc.innerHTML = `Untuk membuka Jubin ${currentStudent.noJubin}, anda perlu memperoleh skor penuh <strong>15/15</strong>. Sila cuba lagi sesi baharu sekarang!`;
       }
     }
 
@@ -605,7 +681,7 @@
       try {
         await fetch(`${SCRIPT_URL}?action=submitGuess&nama=${encodeURIComponent(nama)}&tekaan=${encodeURIComponent(tekaan)}`);
       } catch (err) {
-        console.warn("Ralat hantar tekaan:", err);
+        console.warn("Ralat simpan tekaan:", err);
       }
 
       alert(`Tahniah ${nama}! Tekaan anda: "${tekaan}" telah direkodkan bersama tanda masa.`);
@@ -616,7 +692,7 @@
     }
 
     // ========================================================
-    // PANEL GURU (ADMIN) - KATA LALUAN: adminperniagaan
+    // PANEL GURU (ADMIN) & CIRI-CIRI
     // ========================================================
     function openAdminModal() {
       document.getElementById("adminModal").classList.remove("hidden");
@@ -633,25 +709,51 @@
       if (pass === "adminperniagaan") {
         document.getElementById("adminLoginSection").classList.add("hidden");
         document.getElementById("adminDashboard").classList.remove("hidden");
-        renderAdminDashboard();
+        renderAdminPreviewGrid();
+        renderAdminStatusList();
         fetchAdminGuesses();
       } else {
         document.getElementById("adminError").classList.remove("hidden");
       }
     }
 
-    function renderAdminDashboard() {
+    function renderAdminPreviewGrid() {
+      const board = document.getElementById("adminPreviewBoard");
+      board.innerHTML = "";
+
+      for (let i = 1; i <= 12; i++) {
+        const student = STUDENTS_DATA.find(s => parseInt(s.noJubin) === i);
+        const isOpened = openedTilesSet.has(i);
+        const tileBox = document.createElement("div");
+        tileBox.className = "admin-tile-overlay";
+
+        const shortName = student ? student.nama.split(" ")[0] + " " + (student.nama.split(" ")[1] || "") : "-";
+
+        tileBox.innerHTML = `
+          <div class="text-xl font-black text-amber-300 drop-shadow">${i}</div>
+          <div class="text-[9px] font-bold tracking-tight text-white line-clamp-1 drop-shadow uppercase">${shortName}</div>
+          <span class="text-[8px] font-extrabold px-1.5 py-0.5 rounded mt-0.5 ${isOpened ? 'bg-emerald-600 text-white' : 'bg-slate-700/80 text-slate-200 border border-slate-500'}">
+            ${isOpened ? 'BUKA' : 'TUTUP'}
+          </span>
+        `;
+        board.appendChild(tileBox);
+      }
+    }
+
+    function renderAdminStatusList() {
       const tilesContainer = document.getElementById("adminTilesList");
       tilesContainer.innerHTML = "";
       for (let i = 1; i <= 12; i++) {
+        const student = STUDENTS_DATA.find(s => parseInt(s.noJubin) === i);
         const isOpened = openedTilesSet.has(i);
         const card = document.createElement("div");
-        card.className = `p-2.5 rounded-xl border text-center font-bold ${
+        card.className = `p-2 rounded-xl border text-center font-bold ${
           isOpened ? 'bg-emerald-100 border-emerald-400 text-emerald-800' : 'bg-slate-100 border-slate-300 text-slate-500'
         }`;
         card.innerHTML = `
-          <div class="text-sm">Jubin ${i}</div>
-          <div class="text-[10px] uppercase tracking-wider">${isOpened ? '✓ Terbuka' : 'Tertutup'}</div>
+          <div class="text-xs">Jubin ${i}</div>
+          <div class="text-[9px] truncate text-slate-600 font-normal">${student ? student.nama.split(" ")[0] : ''}</div>
+          <div class="text-[10px] uppercase font-bold mt-0.5">${isOpened ? '✓ Terbuka' : 'Tertutup'}</div>
         `;
         tilesContainer.appendChild(card);
       }
@@ -681,6 +783,36 @@
         }
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500">Gagal memuat turun: ${err.message}</td></tr>`;
+      }
+    }
+
+    async function handleResetAllQuiz() {
+      const confirmReset = confirm("AMARAN: Adakah anda pasti mahu set semula (reset) keseluruhan kuiz?\n\n• Kesemua 12 jubin akan ditutup semula.\n• Semua rekod jawapan tekaan di Google Sheet akan dipadamkan.");
+      if (!confirmReset) return;
+
+      const btn = document.getElementById("btnResetQuiz");
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sedang Reset...`;
+
+      try {
+        await fetch(`${SCRIPT_URL}?action=resetQuiz`);
+        
+        openedTilesSet.clear();
+        for (let i = 1; i <= 12; i++) {
+          const el = document.getElementById(`tile-${i}`);
+          if (el) el.classList.remove("unlocked");
+        }
+
+        renderAdminPreviewGrid();
+        renderAdminStatusList();
+        fetchAdminGuesses();
+
+        alert("Berjaya! Keseluruhan kuiz telah di-reset. Semua 12 jubin kini kembali bertutup dan pangkalan data telah dibersihkan.");
+      } catch (err) {
+        alert("Ralat semasa reset: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-rotate-left"></i> SET SEMULA KESELURUHAN KUIZ`;
       }
     }
 
